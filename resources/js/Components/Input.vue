@@ -1,11 +1,31 @@
+<script setup>
+import { string, oneOf, bool, any } from "vue-types";
+
+const props = defineProps({
+    label: string(),
+    modelValue: any(),
+    placeholder: string().isRequired.def("Input ..."),
+    type: oneOf(["text", "email", "number", "password"]).def("text"),
+    disabled: bool().def(false),
+    errorMessage: string(),
+    successMessage: string(),
+    isPrefix: bool().def(false),
+    required: bool().def(false),
+});
+const emit = defineEmits(["update:modelValue"]);
+const updateValue = (event) => {
+    emit("update:modelValue", event.target.value);
+};
+</script>
+
 <template>
     <div>
         <div class="mb-1" v-if="label">
             <label
                 class="block text-sm font-medium text-slate-600"
                 :for="placeholder"
-            >
-                {{ label }}
+                v-if="label"
+                >{{ label }}
                 <span class="text-rose-500" v-if="required">*</span>
             </label>
         </div>
@@ -27,9 +47,9 @@
                     },
                 ]"
                 class="leading-5 shadow-sm placeholder-slate-400 rounded text-sm text-slate-800 bg-white border w-full focus:ring-0"
-                type="date"
+                :type="type"
                 :placeholder="placeholder"
-                :autocomplete="'off'"
+                :autocomplete="'new-' + type"
                 :disabled="disabled"
                 @input="updateValue"
                 :value="modelValue"
@@ -49,24 +69,3 @@
         </div>
     </div>
 </template>
-
-<script setup>
-import { string, oneOf, bool, any } from "vue-types";
-
-const props = defineProps({
-    label: string(),
-    modelValue: any(),
-    placeholder: string().isRequired.def("Input ..."),
-    disabled: bool().def(false),
-    errorMessage: string(),
-    successMessage: string(),
-    isPrefix: bool().def(false),
-    required: bool().def(false),
-});
-
-const emit = defineEmits(["update:modelValue"]);
-
-const updateValue = (event) => {
-    emit("update:modelValue", event.target.value);
-};
-</script>

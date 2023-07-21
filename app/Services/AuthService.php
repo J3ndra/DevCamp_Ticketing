@@ -13,6 +13,9 @@ class AuthService
         // Store avatar
         $avatarPath = $request->file('avatar')->store('avatar', 'public');
 
+        // Add storage path to avatar
+        $avatarPath = 'storage/' . $avatarPath;
+
         // Store user
         $user = User::create([
             'name' => $request['name'],

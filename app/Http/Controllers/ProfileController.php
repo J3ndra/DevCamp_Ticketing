@@ -33,10 +33,10 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request)
+    public function update($id, ProfileUpdateRequest $request)
     {
         try {
-            $data = $this->profileService->editProfile($request);
+            $data = $this->profileService->editProfile($id, $request);
 
             $result = new ProfileResource($data, 'Profile updated successfully!');
 

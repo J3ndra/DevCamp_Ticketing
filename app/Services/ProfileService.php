@@ -3,31 +3,30 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileService
 {
-    public function editProfile($request)
+    public function editProfile($id, $request)
     {
-        $user = User::find($request->user()->id);
+        $user = User::findOrFail($id);
+        $inputs = $request->all();
 
-        $oldAvatar = $user->avatar;
-        if ($oldAvatar) {
-            Storage::disk('public')->delete($oldAvatar);
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+
+            // Store avatar
+            $avatarPath = $request->file('avatar')->store('avatar', 'public');
+
+            // Add storage path to avatar
+            $avatarPath = 'storage/' . $avatarPath;
+
+            $inputs['avatar'] = $avatarPath;
         }
-        $avatarPath = $request->file('avatar')->store('avatar', 'public');
 
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
-
-        $user->name = $request['name'];
-        $user->email = $request['email'];
-        $user->avatar = $avatarPath;
-        $user->gender = $request['gender'];
-        $user->date_of_birth = $request['date_of_birth'];
-        $user->phone_number = $request['phone_number'];
-
-        $user->save();
+        $user->update($inputs);
 
         return $user;
     }
